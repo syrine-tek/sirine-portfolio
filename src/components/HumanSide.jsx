@@ -1,4 +1,13 @@
 import { useState } from "react";
+import BAC from "../assets/BAC.jpeg";
+import JOUR from "../assets/JOUR.jpeg";
+import rapport from "../assets/rapport.jpeg";
+import comp from "../assets/comp.jpeg";
+import ai_night from "../assets/ai night.jpeg";
+import nuit_d_info from "../assets/nuit d'info.jpeg";
+import friends from "../assets/friends.jpeg";
+import pepole from "../assets/pepole.jpeg";
+import gratude from "../assets/gratude.jpeg";
 
 const categories = ["All", "Hackathons", "Life"];
 
@@ -9,7 +18,7 @@ const humanItems = [
     title: "Baccalaureate Degree",
     description:
       "A proud milestone — obtaining my Baccalaureate in Mathematics and taking the first big step towards Computer Engineering.",
-    image: "src/assets/BAC.jpeg",
+    image: BAC,
     bgGradient: "linear-gradient(135deg, #1e1b4b 0%, #311b92 100%)",
   },
   {
@@ -18,7 +27,7 @@ const humanItems = [
     title: "Engineering Day at ENISO",
     description:
       "An inspiring day at the National Engineering School of Sousse (ENISO) — connecting with engineering peers, tech companies, and innovation leaders.",
-    image: "src/assets/JOUR.jpeg",
+    image: JOUR,
     bgGradient: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
   },
   {
@@ -27,7 +36,7 @@ const humanItems = [
     title: "First Copy of My Thesis Report",
     description:
       "Holding the very first printed copy of my final graduation thesis report — months of dedication, research, and coding finalized in print.",
-    image: "src/assets/rapport.jpeg",
+    image: rapport,
     bgGradient: "linear-gradient(135deg, #2d124d 0%, #1e1b4b 100%)",
   },
   {
@@ -36,7 +45,7 @@ const humanItems = [
     title: "1st Place - AI Competition",
     description:
       "Achieved 1st place in the AI Competition organized at Polytechnique Sousse with Club ARSSI.",
-    image: "src/assets/comp.jpeg",
+    image: comp,
     bgGradient: "linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%)",
   },
   {
@@ -45,7 +54,7 @@ const humanItems = [
     title: "IA Night Challenge",
     description:
       "Participated in the 5th Edition of IA Night Challenge, building AI solutions under intense time pressure.",
-    image: "src/assets/ai night.jpeg",
+    image: ai_night,
     bgGradient: "linear-gradient(135deg, #022c22 0%, #064e3b 100%)",
   },
   {
@@ -54,7 +63,7 @@ const humanItems = [
     title: "Info Night - Organizing Team",
     description:
       "Participated in the organization of this hackathon — a rewarding experience taking on responsibility and supporting the tech community.",
-    image: "src/assets/nuit d'info.jpeg",
+    image: nuit_d_info,
     bgGradient: "linear-gradient(135deg, #172554 0%, #1e3a8a 100%)",
   },
   {
@@ -63,7 +72,7 @@ const humanItems = [
     title: "Good Times, Good People",
     description:
       "A little collection of moments with friends — laughter, spontaneous memories, and the people who make life more fun.",
-    image: "src/assets/friends.jpeg",
+    image: friends,
     bgGradient: "linear-gradient(135deg, #161e2e 0%, #0d131f 100%)",
   },
   {
@@ -72,7 +81,7 @@ const humanItems = [
     title: "The People Around Me",
     description:
       "Precious moments with amazing people who inspire and support me every day.",
-    image: "src/assets/pepole.jpeg",
+    image: pepole,
     bgGradient: "linear-gradient(135deg, #2a1040 0%, #160a24 100%)",
   },
   {
@@ -81,7 +90,7 @@ const humanItems = [
     title: "A New Chapter",
     description:
       "Celebrating graduation — honoring the hard work, unforgettable memories, and stepping confidently into the future.",
-    image: "src/assets/gratude.jpeg",
+    image: gratude,
     bgGradient: "linear-gradient(135deg, #0f172a 0%, #1e1035 100%)",
   },
 ];

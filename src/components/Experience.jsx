@@ -40,7 +40,6 @@ const experiences = [
     technologies: ["Flutter", "Firebase"],
   },
 ];
-
 function Experience() {
   return (
     <section id="experience" className="experience-section">
