@@ -20,10 +20,11 @@ function Contact() {
     setStatus("");
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
 
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
+      // 1. Try Web3Forms
+      let response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -38,29 +39,49 @@ function Contact() {
           message: formData.message,
         }),
       });
+
+      let result = await response.json().catch(() => null);
+
+      // 2. Fallback to FormSubmit.co if Web3Forms fails or key is unverified
+      if (!result || !result.success) {
+        const fsResponse = await fetch("https://formsubmit.co/ajax/syrinetekaya@gmail.com", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            _subject: `[Portfolio Contact] ${formData.subject}`,
+            message: formData.message,
+            _captcha: "false",
+          }),
+        });
+
+        const fsResult = await fsResponse.json().catch(() => null);
+
+        if (fsResponse.ok || (fsResult && fsResult.success === "true")) {
+          result = { success: true };
+        }
+      }
+
       clearTimeout(timeoutId);
 
-      const result = await response.json();
-
-      if (result.success) {
+      if (result && result.success) {
         setStatus("Merci ! Votre message a été envoyé avec succès. 🚀");
         setFormData({ name: "", email: "", subject: "", message: "" });
       } else {
-        window.location.href = `mailto:syrinetekaya@gmail.com?subject=${encodeURIComponent(
-          formData.subject
-        )}&body=${encodeURIComponent(
-          `De: ${formData.name} (${formData.email})\n\n${formData.message}`
-        )}`;
-        setStatus("Redirection vers votre application d'e-mail...");
+        throw new Error("Transmission failed");
       }
     } catch (error) {
       clearTimeout(timeoutId);
       window.location.href = `mailto:syrinetekaya@gmail.com?subject=${encodeURIComponent(
-        formData.subject
+        formData.subject || "Portfolio Contact"
       )}&body=${encodeURIComponent(
         `De: ${formData.name} (${formData.email})\n\n${formData.message}`
       )}`;
-      setStatus("Message préparé dans votre boîte e-mail !");
+      setStatus("Redirection vers votre application e-mail...");
     } finally {
       setLoading(false);
       setTimeout(() => setStatus(""), 6000);
