@@ -15,6 +15,7 @@ import port3 from "../assets/port3.png";
 import port4 from "../assets/port4.png";
 import port5 from "../assets/port5.png";
 import port6 from "../assets/port6.png";
+import port7 from "../assets/port7.png";
 import clubSuite1 from "../assets/University Clubs Management Suite1.png";
 import clubSuite2 from "../assets/University Clubs Management Suite2.png";
 import clubSuite3 from "../assets/University Clubs Management Suite3.png";
@@ -77,7 +78,7 @@ const projects = [
     icon: "bx bx-globe",
     bgGradient: "linear-gradient(135deg, #1e1b4b 0%, #0f1026 100%)",
     thumbnail: port1,
-    images: [port1, port2, port3, port4, port5, port6],
+    images: [port1, port2, port3, port4, port5, port6, port7],
   },
   {
     id: "events-clubs-management",
