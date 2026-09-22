@@ -1,16 +1,58 @@
-# React + Vite
+# 💻 Sirine Tekaya — Personal Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern and responsive personal portfolio website built with React and Vite to showcase my background, technical skills, projects, and professional experience.
 
-Currently, two official plugins are available:
+The portfolio presents my profile as a Computer Engineering graduate specialized in Embedded Systems and IoT, with an interest in web development, mobile development, embedded systems, and modern software technologies.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🌐 Live Demo
 
-## React Compiler
+🔗 **Portfolio:** https://sirine-portfolio-two.vercel.app/
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Features
 
-## Expanding the ESLint configuration
+- 👩‍💻 Personal profile and professional introduction
+- 🛠️ Technical skills presentation
+- 📂 Projects showcase
+- 🎓 Education section
+- 💼 Professional experience
+- 📱 Responsive design
+- ⚡ Fast and optimized Vite development environment
+- 🎨 Modern and clean user interface
+- 📬 Contact section
+- 🔗 Links to professional and social profiles
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🛠️ Technologies Used
+
+- React
+- Vite
+- JavaScript
+- HTML5
+- CSS3
+- ESLint
+- Git
+- GitHub
+- Vercel
+
+## 📂 Project Structure
+
+```text
+sirine-portfolio/
+│
+├── public/
+│   └── Assets and public resources
+│
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── sections/
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── styles/
+│
+├── .gitignore
+├── eslint.config.js
+├── index.html
+├── package.json
+├── package-lock.json
+├── vite.config.js
+└── README.md
