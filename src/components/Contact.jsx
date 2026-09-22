@@ -33,16 +33,18 @@ function Contact() {
         signal: controller.signal,
         body: JSON.stringify({
           access_key: "4362fd29-14b1-40a0-b3af-cbea39d975c7",
+          from_name: "Portfolio Sirine Tekaya",
           name: formData.name,
           email: formData.email,
-          subject: formData.subject,
+          replyto: formData.email,
+          subject: `[Portfolio] ${formData.subject}`,
           message: formData.message,
         }),
       });
 
       let result = await response.json().catch(() => null);
 
-      // 2. Fallback to FormSubmit.co if Web3Forms fails or key is unverified
+      // 2. Fallback to FormSubmit.co with anti-spam table formatting & reply-to
       if (!result || !result.success) {
         const fsResponse = await fetch("https://formsubmit.co/ajax/syrinetekaya@gmail.com", {
           method: "POST",
@@ -53,15 +55,17 @@ function Contact() {
           body: JSON.stringify({
             name: formData.name,
             email: formData.email,
+            _replyto: formData.email,
             _subject: `[Portfolio Contact] ${formData.subject}`,
             message: formData.message,
+            _template: "table",
             _captcha: "false",
           }),
         });
 
         const fsResult = await fsResponse.json().catch(() => null);
 
-        if (fsResponse.ok || (fsResult && fsResult.success === "true")) {
+        if (fsResponse.ok || (fsResult && (fsResult.success === "true" || fsResult.success === true))) {
           result = { success: true };
         }
       }
