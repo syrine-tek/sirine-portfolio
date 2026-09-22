@@ -350,7 +350,7 @@ function ProjectCard({ project, onOpenVideoModal, onOpenImageModal }) {
               {project.video ? (
                 <><i className="bx bx-play-circle" /> Watch demo</>
               ) : (
-                <><i className="bx bx-images" /> View screenshots</>
+                <><i className="bx bx-images" /> Live</>
               )}
             </button>
           ) : project.liveUrl ? (
