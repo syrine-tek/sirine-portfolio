@@ -1,4 +1,23 @@
 import { useRef, useState, useEffect, useCallback } from "react";
+import milora from "../assets/milora.png";
+import miloraVideo from "../assets/MILORA.mp4";
+import antisamsar from "../assets/antisamsar.png";
+import antisamsarVideo from "../assets/antisamsar.mp4";
+import prototype from "../assets/prototype.jpeg";
+import SMART1 from "../assets/SMART1.png";
+import SMART2 from "../assets/SMART2.png";
+import SMART3 from "../assets/SMART3.png";
+import SMART4 from "../assets/SMART4.png";
+import cablageprojet from "../assets/cablageprojet.png";
+import port1 from "../assets/port1.png";
+import port2 from "../assets/port2.png";
+import port3 from "../assets/port3.png";
+import port4 from "../assets/port4.png";
+import port5 from "../assets/port5.png";
+import port6 from "../assets/port6.png";
+import clubSuite1 from "../assets/University Clubs Management Suite1.png";
+import clubSuite2 from "../assets/University Clubs Management Suite2.png";
+import clubSuite3 from "../assets/University Clubs Management Suite3.png";
 
 const projects = [
   {
@@ -12,8 +31,8 @@ const projects = [
     isPrivate: false,
     icon: "bx bx-shopping-bag",
     bgGradient: "linear-gradient(135deg, #2d1b4e 0%, #16182c 100%)",
-    thumbnail: "src/assets/milora.png",  // add your screenshot here
-    video: "src/assets/MILORA.mp4",
+    thumbnail: milora,
+    video: miloraVideo,
   },
   {
     id: "antisamsar",
@@ -26,8 +45,8 @@ const projects = [
     isPrivate: true,
     icon: "bx bx-building-house",
     bgGradient: "linear-gradient(135deg, #4c1d95 0%, #1e1b4b 100%)",
-    thumbnail: "src/assets/antisamsar.png",  // add your screenshot here
-    video: "src/assets/antisamsar.mp4",
+    thumbnail: antisamsar,
+    video: antisamsarVideo,
     phoneFrame: true,
     videoBg: "radial-gradient(ellipse at center, #008f47 0%, #006633 45%, #003d1f 100%)",
   },
@@ -42,8 +61,8 @@ const projects = [
     isPrivate: false,
     icon: "bx bx-shield-quarter",
     bgGradient: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
-    thumbnail: "src/assets/prototype.jpeg",  // add your screenshot here
-    images: ["src/assets/SMART1.png", "src/assets/SMART2.png", "src/assets/SMART3.png", "src/assets/SMART4.png", "src/assets/cablageprojet.png"],  // add image paths here
+    thumbnail: prototype,
+    images: [SMART1, SMART2, SMART3, SMART4, cablageprojet],
   },
   {
     id: "portfolio-website",
@@ -57,9 +76,8 @@ const projects = [
     isPrivate: false,
     icon: "bx bx-globe",
     bgGradient: "linear-gradient(135deg, #1e1b4b 0%, #0f1026 100%)",
-    thumbnail: "src/assets/port1.png",
-    images: ["src/assets/port1.png", "src/assets/port2.png", "src/assets/port3.png", "src/assets/port4.png", "src/assets/port5.png", "src/assets/port6.png"],  // add image paths here
-
+    thumbnail: port1,
+    images: [port1, port2, port3, port4, port5, port6],
   },
   {
     id: "events-clubs-management",
@@ -72,8 +90,8 @@ const projects = [
     isPrivate: false,
     icon: "bx bx-group",
     bgGradient: "linear-gradient(135deg, #2e1065 0%, #170d38 100%)",
-    thumbnail: "src/assets/University Clubs Management Suite1.png",
-    images: ["src/assets/University Clubs Management Suite1.png", "src/assets/University Clubs Management Suite2.png", "src/assets/University Clubs Management Suite3.png"],
+    thumbnail: clubSuite1,
+    images: [clubSuite1, clubSuite2, clubSuite3],
   },
 ];
 
