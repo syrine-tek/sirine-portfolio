@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import BAC from "../assets/BAC.jpeg";
 import JOUR from "../assets/JOUR.jpeg";
 import rapport from "../assets/rapport.jpeg";
@@ -15,106 +15,168 @@ const humanItems = [
   {
     id: "baccalaureate-achievement",
     category: "Life",
-    title: "Baccalaureate Degree",
+    title: "Academic Milestone: Mathematics Baccalaureate",
     description:
-      "A proud milestone — obtaining my Baccalaureate in Mathematics and taking the first big step towards Computer Engineering.",
+      "Laying the foundation — earning my Baccalaureate with a specialization in Mathematics, sparking a lifelong passion for complex problem-solving and software engineering.",
     image: BAC,
-    bgGradient: "linear-gradient(135deg, #1e1b4b 0%, #311b92 100%)",
+    bgGradient: "radial-gradient(circle at 50% 30%, #1e1b4b 0%, #090d16 100%)",
   },
   {
     id: "eniso-engineering-day",
     category: "Life",
-    title: "Engineering Day at ENISO",
+    title: "ENISO Engineering & Industry Forum",
     description:
-      "An inspiring day at the National Engineering School of Sousse (ENISO) — connecting with engineering peers, tech companies, and innovation leaders.",
+      "Engaging at the National Engineering School of Sousse (ENISO) — exchanging insights with industry pioneers, tech leaders, and fellow innovator engineers.",
     image: JOUR,
-    bgGradient: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+    bgGradient: "radial-gradient(circle at 50% 30%, #1e293b 0%, #0b0f17 100%)",
   },
   {
     id: "first-thesis-copy",
     category: "Life",
-    title: "First Copy of My Thesis Report",
+    title: "Engineering Thesis Manuscript",
     description:
-      "Holding the very first printed copy of my final graduation thesis report — months of dedication, research, and coding finalized in print.",
+      "Holding the physical culmination of my academic journey — months of intensive research, system architecture design, and full-stack engineering captured in print.",
     image: rapport,
-    bgGradient: "linear-gradient(135deg, #2d124d 0%, #1e1b4b 100%)",
+    bgGradient: "radial-gradient(circle at 50% 30%, #2e1065 0%, #0a0d14 100%)",
   },
   {
     id: "polytechnique-sousse-ai-comp",
     category: "Hackathons",
-    title: "1st Place - AI Competition",
+    title: "1st Place Winner — Polytechnique AI Cup",
     description:
-      "Achieved 1st place in the AI Competition organized at Polytechnique Sousse with Club ARSSI.",
+      "Awarded 1st place in the prestigious AI Competition hosted at Polytechnique Sousse with ARSSI Club for designing an innovative computer vision architecture.",
     image: comp,
-    bgGradient: "linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%)",
+    bgGradient: "radial-gradient(circle at 50% 30%, #3b0764 0%, #090c15 100%)",
   },
   {
     id: "ia-night-challenge",
     category: "Hackathons",
-    title: "IA Night Challenge",
+    title: "IA Night Challenge — 5th Edition",
     description:
-      "Participated in the 5th Edition of IA Night Challenge, building AI solutions under intense time pressure.",
+      "Architecting machine learning solutions under high pressure — competing alongside top talent in an intensive overnight artificial intelligence hackathon.",
     image: ai_night,
-    bgGradient: "linear-gradient(135deg, #022c22 0%, #064e3b 100%)",
+    bgGradient: "radial-gradient(circle at 50% 30%, #064e3b 0%, #080c14 100%)",
   },
   {
     id: "info-night",
     category: "Hackathons",
-    title: "Info Night - Organizing Team",
+    title: "Info Night — Technical Organizing Committee",
     description:
-      "Participated in the organization of this hackathon — a rewarding experience taking on responsibility and supporting the tech community.",
+      "Steering logistics and operations for the annual tech hackathon — empowering developer teams, fostering collaboration, and cultivating tech community growth.",
     image: nuit_d_info,
-    bgGradient: "linear-gradient(135deg, #172554 0%, #1e3a8a 100%)",
+    bgGradient: "radial-gradient(circle at 50% 30%, #1e3a8a 0%, #0a0d17 100%)",
   },
   {
     id: "good-times",
     category: "Life",
-    title: "Good Times, Good People",
+    title: "Moments & Connections",
     description:
-      "A little collection of moments with friends — laughter, spontaneous memories, and the people who make life more fun.",
+      "Cherished memories with close companions — balancing deep focus with shared laughter, shared growth, and lifelong friendships.",
     image: friends,
-    bgGradient: "linear-gradient(135deg, #161e2e 0%, #0d131f 100%)",
+    bgGradient: "radial-gradient(circle at 50% 30%, #172554 0%, #090c16 100%)",
   },
   {
     id: "people-around-me",
     category: "Life",
-    title: "The People Around Me",
+    title: "The Circle of Inspiration",
     description:
-      "Precious moments with amazing people who inspire and support me every day.",
+      "Surrounded by exceptional minds and supportive mentors who fuel creativity, continuous learning, and personal growth.",
     image: pepole,
-    bgGradient: "linear-gradient(135deg, #2a1040 0%, #160a24 100%)",
+    bgGradient: "radial-gradient(circle at 50% 30%, #311042 0%, #0a0d16 100%)",
   },
   {
     id: "new-chapter",
     category: "Life",
-    title: "A New Chapter",
+    title: "Commencement & Beyond",
     description:
-      "Celebrating graduation — honoring the hard work, unforgettable memories, and stepping confidently into the future.",
+      "Honoring the culmination of my engineering degree — stepping forward into the tech industry with ambition, drive, and vision.",
     image: gratude,
-    bgGradient: "linear-gradient(135deg, #0f172a 0%, #1e1035 100%)",
+    bgGradient: "radial-gradient(circle at 50% 30%, #1e1b4b 0%, #080b13 100%)",
   },
 ];
 
 function HumanSide() {
   const [activeTab, setActiveTab] = useState("All");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+  const deckRef = useRef(null);
 
   const filteredItems =
     activeTab === "All"
       ? humanItems
       : humanItems.filter((item) => item.category === activeTab);
 
+  const totalCards = filteredItems.length;
+
+  const handleTabChange = (category) => {
+    setActiveTab(category);
+    setCurrentIndex(0);
+  };
+
+  const nextCard = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % totalCards);
+  }, [totalCards]);
+
+  const prevCard = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + totalCards) % totalCards);
+  }, [totalCards]);
+
+  // Non-passive wheel event listener with e.preventDefault() to freeze page scroll
+  useEffect(() => {
+    const el = deckRef.current;
+    if (!el) return;
+
+    let isCooldown = false;
+
+    const onWheel = (e) => {
+      // Prevent browser default window scrolling
+      e.preventDefault();
+
+      if (isCooldown) return;
+      isCooldown = true;
+      setTimeout(() => {
+        isCooldown = false;
+      }, 250);
+
+      if (e.deltaY > 0) {
+        setCurrentIndex((prev) => (prev + 1) % totalCards);
+      } else if (e.deltaY < 0) {
+        setCurrentIndex((prev) => (prev - 1 + totalCards) % totalCards);
+      }
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+    };
+  }, [totalCards]);
+
+  // Touch swipe event handlers
+  const handleTouchStart = (e) => {
+    setTouchStart(e.touches[0].clientY);
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!touchStart) return;
+    const diff = touchStart - e.changedTouches[0].clientY;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) nextCard();
+      else prevCard();
+    }
+    setTouchStart(null);
+  };
+
   return (
     <section id="human-side" className="human-side-section">
       <div className="section-container">
-        {/* Section Header matching site design system */}
+        {/* Section Header */}
         <div className="human-side-header">
           <h2 className="code-section-title" style={{ marginBottom: "16px" }}>
-            <span className="code-tag">&lt;</span> The human behind the code <span className="code-tag">/&gt;</span>
+            <span className="code-tag">&lt;</span> Beyond Code <span className="code-tag">/&gt;</span>
           </h2>
 
           <p className="human-side-desc">
-            I believe continuous learning, curiosity, and collaboration are
-            essential for creating meaningful technology solutions.
+            Continuous learning, passion for hackathons, teamwork, and personal milestones that shape who I am behind the code.
           </p>
 
           {/* Filter Pills */}
@@ -123,7 +185,7 @@ function HumanSide() {
               <button
                 key={category}
                 className={`filter-pill ${activeTab === category ? "active" : ""}`}
-                onClick={() => setActiveTab(category)}
+                onClick={() => handleTabChange(category)}
               >
                 {category}
               </button>
@@ -131,38 +193,83 @@ function HumanSide() {
           </div>
         </div>
 
-        {/* Human Side Gallery Grid */}
-        <div className="human-gallery-grid">
-          {filteredItems.map((item) => (
-            <div className="human-card" key={item.id}>
-              {/* Subtle glowing corner bracket */}
-              <div className="corner-bracket top-left" />
+        {/* STACKED CARDS SHOWCASE (Deck in same place with window header bar & scroll lock) */}
+        <div 
+          ref={deckRef}
+          className="deck-container"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="deck-wrapper">
+            {filteredItems.map((item, idx) => {
+              const offset = idx - currentIndex;
+              let positionClass = "";
 
-              {/* Background photo container */}
-              <div
-                className="human-card-bg"
-                style={{ background: item.bgGradient }}
-              >
-                {item.image && (
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="human-card-img"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                    }}
-                  />
-                )}
-                <div className="human-card-overlay" />
-              </div>
+              if (offset === 0) positionClass = "deck-card-active";
+              else if (offset === 1 || (offset === -(totalCards - 1) && totalCards > 2)) positionClass = "deck-card-next-1";
+              else if (offset === 2 || (offset === -(totalCards - 2) && totalCards > 3)) positionClass = "deck-card-next-2";
+              else if (offset < 0) positionClass = "deck-card-passed";
+              else positionClass = "deck-card-hidden";
 
-              {/* Card content text overlay */}
-              <div className="human-card-content">
-                <h3 className="human-card-title">{item.title}</h3>
-                <p className="human-card-desc">{item.description}</p>
-              </div>
+              return (
+                <div
+                  key={item.id}
+                  className={`deck-card ${positionClass}`}
+                  onClick={() => {
+                    if (offset > 0) setCurrentIndex(idx);
+                  }}
+                >
+                  {/* Full-bleed Photo Background */}
+                  <div className="deck-card-bg" style={{ background: item.bgGradient }}>
+                    {item.image && (
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="deck-card-img"
+                        onError={(e) => { e.target.style.display = "none"; }}
+                      />
+                    )}
+                    <div className="deck-card-overlay" />
+                  </div>
+
+                  {/* macOS Top Bar — Traffic lights + category pill */}
+                  <div className="deck-card-window-bar">
+                    <div className="window-dots">
+                      <span className="dot dot-close" />
+                      <span className="dot dot-minimize" />
+                      <span className="dot dot-expand" />
+                    </div>
+                    <span className="deck-tag-pill">{item.category}</span>
+                  </div>
+
+                  {/* Glass Bottom Info Panel */}
+                  <div className="deck-card-bottom">
+                    <div className="deck-card-bottom-row">
+                      <h3 className="deck-card-title">{item.title}</h3>
+                      <span className="deck-card-counter">
+                        {String(idx + 1).padStart(2, "0")} <span className="counter-sep">/</span> {String(filteredItems.length).padStart(2, "0")}
+                      </span>
+                    </div>
+                    <p className="deck-card-desc">{item.description}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Floating Controls Bar (Dots Only) */}
+          <div className="deck-controls">
+            <div className="deck-dots">
+              {filteredItems.map((_, i) => (
+                <button
+                  key={i}
+                  className={`deck-dot ${currentIndex === i ? "active" : ""}`}
+                  onClick={() => setCurrentIndex(i)}
+                  aria-label={`Go to item ${i + 1}`}
+                />
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>

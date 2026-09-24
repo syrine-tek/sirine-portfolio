@@ -97,84 +97,42 @@ const projects = [
 ];
 
 /* ─────────────────────────────────────────────
-   VIDEO MODAL (lightbox)
+   PERFECTIONIST PROJECT SHOWCASE MODAL
 ───────────────────────────────────────────── */
-function VideoModal({ project, onClose }) {
-  useEffect(() => {
-    const handleKey = (e) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", handleKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", handleKey);
-      document.body.style.overflow = "";
-    };
-  }, [onClose]);
+function ProjectShowcaseModal({ project, initialTab = "demo", onClose }) {
+  const [activeTab, setActiveTab] = useState(() => {
+    if (initialTab === "live" && project.liveUrl) return "live";
+    if (project.video) return "video";
+    if (project.images && project.images.length > 0) return "gallery";
+    return "details";
+  });
 
-  return (
-    <div className="video-modal-overlay" onClick={onClose}>
-      <div className="video-modal-box" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
-        <div className="video-modal-header">
-          <div>
-            <h2 className="video-modal-title">{project.title}</h2>
-            <p className="video-modal-desc">{project.description}</p>
-          </div>
-          <button className="video-modal-close" onClick={onClose} aria-label="Close">
-            <i className="bx bx-x" />
-          </button>
-        </div>
-
-        {/* Player area */}
-        {project.phoneFrame ? (
-          /* ── Phone frame mode ── */
-          <div
-            className="video-modal-phone-bg"
-            style={{ background: project.videoBg || "radial-gradient(ellipse at center, #a021b5 0%, #6b0fa0 40%, #2a0040 100%)" }}
-          >
-            <div className="phone-frame">
-              {/* notch */}
-              <div className="phone-notch" />
-              <div className="phone-screen">
-                <video
-                  src={project.video}
-                  controls
-                  autoPlay
-                  className="phone-screen-video"
-                />
-              </div>
-            </div>
-          </div>
-        ) : (
-          /* ── Normal player mode ── */
-          <div className="video-modal-player">
-            <video
-              src={project.video}
-              controls
-              autoPlay
-              className="video-modal-video"
-            />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   IMAGE CAROUSEL MODAL (lightbox)
-───────────────────────────────────────────── */
-function ImageModal({ project, onClose }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const images = project.images || [];
+  const [copiedUrl, setCopiedUrl] = useState(false);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [iframeError, setIframeError] = useState(false);
+  const videoRef = useRef(null);
 
-  const prev = useCallback(() => setCurrentIndex((i) => (i - 1 + images.length) % images.length), [images.length]);
-  const next = useCallback(() => setCurrentIndex((i) => (i + 1) % images.length), [images.length]);
+  const images = project.images || [];
+  const hasVideo = Boolean(project.video);
+  const hasImages = images.length > 0;
+  const hasLive = Boolean(project.liveUrl && project.liveUrl !== "#home");
+
+  const prevImage = useCallback(() => {
+    setCurrentIndex((i) => (i - 1 + images.length) % images.length);
+  }, [images.length]);
+
+  const nextImage = useCallback(() => {
+    setCurrentIndex((i) => (i + 1) % images.length);
+  }, [images.length]);
 
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === "Escape") onClose();
-      if (e.key === "ArrowLeft") prev();
-      if (e.key === "ArrowRight") next();
+      if (activeTab === "gallery" && images.length > 1) {
+        if (e.key === "ArrowLeft") prevImage();
+        if (e.key === "ArrowRight") nextImage();
+      }
     };
     document.addEventListener("keydown", handleKey);
     document.body.style.overflow = "hidden";
@@ -182,77 +140,272 @@ function ImageModal({ project, onClose }) {
       document.removeEventListener("keydown", handleKey);
       document.body.style.overflow = "";
     };
-  }, [onClose, prev, next]);
+  }, [onClose, activeTab, images.length, prevImage, nextImage]);
+
+  const projectUrl = (project.liveUrl && project.liveUrl !== "#home")
+    ? project.liveUrl
+    : (project.githubUrl && project.githubUrl !== "#contact" ? project.githubUrl : `https://github.com/syrine-tek`);
+
+  const handleCopyAndOpenProject = (e) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(projectUrl).then(() => {
+      setCopiedUrl(true);
+      setTimeout(() => setCopiedUrl(false), 2000);
+    });
+    if (projectUrl && projectUrl !== "#contact") {
+      window.open(projectUrl, "_blank", "noopener,noreferrer");
+    }
+  };
 
   return (
-    <div className="video-modal-overlay" onClick={onClose}>
-      <div className="image-modal-box" onClick={(e) => e.stopPropagation()}>
+    <div className="showcase-modal-overlay" onClick={onClose}>
+      {/* Background ambient radial glow matching project theme */}
+      <div
+        className="showcase-modal-glow"
+        style={{ background: project.videoBg || project.bgGradient || "radial-gradient(circle, rgba(178, 124, 30, 0.25) 0%, transparent 70%)" }}
+      />
 
-        {/* Header */}
-        <div className="image-modal-header">
-          <div>
-            <h2 className="video-modal-title">{project.title}</h2>
-            <p className="video-modal-desc">{project.imageCaption || "Overview of the interface and key features."}</p>
-          </div>
-          <button className="video-modal-close" onClick={onClose} aria-label="Close">
-            <i className="bx bx-x" />
-          </button>
-        </div>
-
-        {/* Image viewer */}
-        <div className="image-modal-viewer">
-          {/* Prev arrow */}
-          {images.length > 1 && (
-            <button className="img-modal-arrow img-modal-arrow-left" onClick={prev} aria-label="Previous">
-              <i className="bx bx-chevron-left" />
-            </button>
-          )}
-
-          {/* Image */}
-          <div className="image-modal-img-wrap">
-            <img
-              src={images[currentIndex]}
-              alt={`${project.title} screenshot ${currentIndex + 1}`}
-              className="image-modal-img"
-            />
+      <div className="showcase-modal-window" onClick={(e) => e.stopPropagation()}>
+        {/* macOS Browser Window Header Bar */}
+        <div className="showcase-window-bar">
+          {/* Traffic Light Window Dots */}
+          <div className="window-dots">
+            <button className="dot dot-close" onClick={onClose} title="Close window"><i className="bx bx-x" /></button>
+            <button className="dot dot-minimize" onClick={onClose} title="Minimize"><i className="bx bx-minus" /></button>
+            <button className="dot dot-expand" onClick={() => {
+              if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
+              else document.documentElement.requestFullscreen().catch(() => { });
+            }} title="Fullscreen"><i className="bx bx-expand-alt" /></button>
           </div>
 
-          {/* Next arrow */}
-          {images.length > 1 && (
-            <button className="img-modal-arrow img-modal-arrow-right" onClick={next} aria-label="Next">
-              <i className="bx bx-chevron-right" />
+          {/* Browser Address Bar / URL Pill - Copies & Opens GitHub / Live Project */}
+          <div className="window-address-bar" onClick={handleCopyAndOpenProject} title="Click to copy & open project link">
+            <i className={projectUrl.includes("github.com") ? "bx bxl-github lock-icon" : "bx bx-lock-alt lock-icon"} />
+            <span className="address-url">{projectUrl}</span>
+            <span className="copy-badge">{copiedUrl ? "Copied & Opening!" : (projectUrl.includes("github.com") ? "GitHub" : "Open")}</span>
+          </div>
+
+          {/* Top Right Quick Actions */}
+          <div className="window-actions">
+            {project.githubUrl && !project.isPrivate && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="window-action-btn"
+                title="View Source on GitHub"
+                onClick={(e) => {
+                  navigator.clipboard.writeText(project.githubUrl);
+                  setCopiedUrl(true);
+                  setTimeout(() => setCopiedUrl(false), 2000);
+                }}
+              >
+                <i className="bx bxl-github" />
+                <span>{copiedUrl ? "Copied!" : "GitHub"}</span>
+              </a>
+            )}
+            <button className="window-close-btn" onClick={onClose} aria-label="Close">
+              <i className="bx bx-x" />
             </button>
-          )}
+          </div>
         </div>
 
-        {/* Dot indicators */}
-        {images.length > 1 && (
-          <div className="image-modal-dots">
-            {images.map((_, i) => (
+        {/* Sub-Header Title & Navigation Tabs */}
+        <div className="showcase-sub-bar">
+          <div className="showcase-title-area">
+            <h2 className="showcase-modal-title">
+              <i className={project.icon || "bx bx-code-alt"} />
+              {project.title}
+            </h2>
+            <div className="showcase-modal-tags">
+              {project.tags.map((tag) => (
+                <span key={tag} className="showcase-tag-chip">{tag}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* View Switcher Tabs */}
+          <div className="showcase-tabs">
+            {hasVideo && (
               <button
-                key={i}
-                className={`img-dot ${i === currentIndex ? "active" : ""}`}
-                onClick={() => setCurrentIndex(i)}
-                aria-label={`Go to image ${i + 1}`}
-              />
-            ))}
+                className={`showcase-tab ${activeTab === "video" ? "active" : ""}`}
+                onClick={() => setActiveTab("video")}
+              >
+                <i className="bx bx-play-circle" /> Video Walkthrough
+              </button>
+            )}
+            {hasImages && (
+              <button
+                className={`showcase-tab ${activeTab === "gallery" ? "active" : ""}`}
+                onClick={() => setActiveTab("gallery")}
+              >
+                <i className="bx bx-images" /> Gallery ({images.length})
+              </button>
+            )}
+            {hasLive && (
+              <button
+                className={`showcase-tab ${activeTab === "live" ? "active" : ""}`}
+                onClick={() => setActiveTab("live")}
+              >
+                <i className="bx bx-globe" /> Live Web Frame
+              </button>
+            )}
           </div>
-        )}
+        </div>
 
+        {/* Modal Main Viewport Container */}
+        <div className="showcase-modal-viewport">
+          {/* TAB 1: VIDEO WALKTHROUGH */}
+          {activeTab === "video" && hasVideo && (
+            project.phoneFrame ? (
+              /* Ultra Phone Mockup Mode */
+              <div className="showcase-phone-viewport" style={{ background: project.videoBg || "radial-gradient(ellipse at center, #1b1035 0%, #090615 100%)" }}>
+                <div className="phone-frame-pro">
+                  <div className="phone-dynamic-island">
+                    <span className="camera-lens" />
+                  </div>
+                  <div className="phone-screen-inner">
+                    <video
+                      ref={videoRef}
+                      src={project.video}
+                      controls
+                      autoPlay
+                      className="phone-video-media"
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Standard Desktop Browser Player Mode */
+              <div className="showcase-video-viewport">
+                <video
+                  ref={videoRef}
+                  src={project.video}
+                  controls
+                  autoPlay
+                  className="showcase-desktop-video"
+                />
+              </div>
+            )
+          )}
+
+          {/* TAB 2: IMAGE GALLERY CAROUSEL */}
+          {activeTab === "gallery" && hasImages && (
+            <div className="showcase-gallery-viewport">
+              {images.length > 1 && (
+                <button className="gallery-nav-btn gallery-nav-prev" onClick={prevImage} aria-label="Previous image">
+                  <i className="bx bx-chevron-left" />
+                </button>
+              )}
+
+              <div className="gallery-main-image-container">
+                <img
+                  src={images[currentIndex]}
+                  alt={`${project.title} screenshot ${currentIndex + 1}`}
+                  className="gallery-main-image"
+                />
+                <div className="gallery-counter-pill">
+                  {currentIndex + 1} / {images.length}
+                </div>
+              </div>
+
+              {images.length > 1 && (
+                <button className="gallery-nav-btn gallery-nav-next" onClick={nextImage} aria-label="Next image">
+                  <i className="bx bx-chevron-right" />
+                </button>
+              )}
+
+              {/* Filmstrip thumbnails */}
+              {images.length > 1 && (
+                <div className="gallery-thumbnails-strip">
+                  {images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      className={`thumb-box ${idx === currentIndex ? "active" : ""}`}
+                      onClick={() => setCurrentIndex(idx)}
+                    >
+                      <img src={img} alt={`Thumb ${idx + 1}`} />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 3: LIVE WEB FRAME PREVIEW (with origin protection fallback) */}
+          {activeTab === "live" && hasLive && (
+            <div className="showcase-live-viewport">
+              {!iframeError ? (
+                <div className="live-iframe-wrapper">
+                  {!iframeLoaded && (
+                    <div className="live-loading-spinner">
+                      <div className="spinner-ring" />
+                      <p>Loading interactive live frame...</p>
+                    </div>
+                  )}
+                  <iframe
+                    src={project.liveUrl}
+                    title={project.title}
+                    className="live-iframe-element"
+                    onLoad={() => setIframeLoaded(true)}
+                    onError={() => setIframeError(true)}
+                  />
+                </div>
+              ) : (
+                /* Fallback frame if external site blocks embedding */
+                <div className="live-frame-fallback">
+                  <div className="fallback-card">
+                    <i className="bx bx-shield-quarter fallback-icon" />
+                    <h3>Frame Embedding Restricted</h3>
+                    <p>
+                      This site enforces strict CORS security policies preventing in-browser iframe rendering.
+                      You can launch it securely in a new isolated browser tab.
+                    </p>
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="fallback-launch-btn"
+                    >
+                      Open Live Application <i className="bx bx-export" />
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Modal Description Footer */}
+        <div className="showcase-modal-footer">
+          <p className="showcase-footer-desc">{project.description}</p>
+          <div className="showcase-footer-meta">
+            {project.isPrivate ? (
+              <span className="footer-status-tag private">
+                <i className="bx bx-lock-alt" /> Private Repository
+              </span>
+            ) : (
+              <span className="footer-status-tag public">
+                <i className="bx bx-code-alt" /> Open Source Project
+              </span>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
+
 /* ─────────────────────────────────────────────
    PROJECT CARD
 ───────────────────────────────────────────── */
-function ProjectCard({ project, onOpenVideoModal, onOpenImageModal }) {
+function ProjectCard({ project, onOpenShowcase }) {
   const videoRef = useRef(null);
   const [hovered, setHovered] = useState(false);
 
   const hasImages = project.images && project.images.length > 0;
-  const showDemoButton = project.video || hasImages;
+  const showDemoButton = project.video || hasImages || (project.liveUrl && project.liveUrl !== "#home");
 
   const handleMouseEnter = () => {
     setHovered(true);
@@ -266,10 +419,9 @@ function ProjectCard({ project, onOpenVideoModal, onOpenImageModal }) {
     }
   };
 
-  const handleDemoClick = (e) => {
+  const handleDemoClick = (e, tab = "demo") => {
     e.preventDefault();
-    if (project.video) onOpenVideoModal(project);
-    else if (hasImages) onOpenImageModal(project);
+    onOpenShowcase(project, tab);
   };
 
   return (
@@ -278,7 +430,7 @@ function ProjectCard({ project, onOpenVideoModal, onOpenImageModal }) {
         className="portfolio-thumb"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onClick={showDemoButton ? handleDemoClick : undefined}
+        onClick={showDemoButton ? (e) => handleDemoClick(e, "demo") : undefined}
         style={{
           background: project.thumbnail ? "transparent" : project.bgGradient,
           cursor: showDemoButton ? "pointer" : "default",
@@ -330,7 +482,7 @@ function ProjectCard({ project, onOpenVideoModal, onOpenImageModal }) {
         {showDemoButton && (
           <div className={`portfolio-center-play ${hovered ? "visible" : ""}`}>
             <i className={project.video ? "bx bx-play-circle" : "bx bx-images"} />
-            <span>{project.video ? "Watch demo" : "View screenshots"}</span>
+            <span>{project.video ? "Watch demo" : "View showcase"}</span>
           </div>
         )}
       </div>
@@ -347,17 +499,17 @@ function ProjectCard({ project, onOpenVideoModal, onOpenImageModal }) {
 
         <div className="link-btn-group">
           {showDemoButton ? (
-            <button className="btn-demo-pill" onClick={handleDemoClick}>
+            <button className="btn-demo-pill" onClick={(e) => handleDemoClick(e, project.video ? "video" : "gallery")}>
               {project.video ? (
                 <><i className="bx bx-play-circle" /> Watch demo</>
               ) : (
-                <><i className="bx bx-images" /> Live</>
+                <><i className="bx bx-images" /> View Demo</>
               )}
             </button>
           ) : project.liveUrl ? (
-            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="btn-demo-pill">
+            <button className="btn-demo-pill" onClick={(e) => handleDemoClick(e, "live")}>
               Live <i className="bx bx-export" />
-            </a>
+            </button>
           ) : (
             <a href="#contact" className="btn-demo-pill">
               Contact <i className="bx bx-envelope" />
@@ -383,8 +535,11 @@ function ProjectCard({ project, onOpenVideoModal, onOpenImageModal }) {
    PROJECTS SECTION
 ───────────────────────────────────────────── */
 function Projects() {
-  const [videoModal, setVideoModal] = useState(null);
-  const [imageModal, setImageModal] = useState(null);
+  const [showcaseModal, setShowcaseModal] = useState(null); // { project, initialTab }
+
+  const handleOpenShowcase = (project, initialTab = "demo") => {
+    setShowcaseModal({ project, initialTab });
+  };
 
   return (
     <section id="projects" className="projects-section">
@@ -398,21 +553,19 @@ function Projects() {
             <ProjectCard
               key={project.id}
               project={project}
-              onOpenVideoModal={setVideoModal}
-              onOpenImageModal={setImageModal}
+              onOpenShowcase={handleOpenShowcase}
             />
           ))}
         </div>
       </div>
 
-      {/* Video Modal */}
-      {videoModal && (
-        <VideoModal project={videoModal} onClose={() => setVideoModal(null)} />
-      )}
-
-      {/* Image Carousel Modal */}
-      {imageModal && (
-        <ImageModal project={imageModal} onClose={() => setImageModal(null)} />
+      {/* Project Showcase Modal */}
+      {showcaseModal && (
+        <ProjectShowcaseModal
+          project={showcaseModal.project}
+          initialTab={showcaseModal.initialTab}
+          onClose={() => setShowcaseModal(null)}
+        />
       )}
     </section>
   );

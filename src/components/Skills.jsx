@@ -14,6 +14,7 @@ const certifications = [
     hours: "4 Hours Training",
     code: "25383TW7",
     image: certifSoftskills,
+    credentialUrl: "https://www.linkedin.com/in/sirine-tekaya/details/certifications/",
     description:
       "Certified Training Diploma in Emotional Intelligence & Soft Skills delivered by Hassene Methlouthi under the supervision of KoneKt US Business.",
   },
@@ -24,6 +25,7 @@ const certifications = [
     issuer: "AI Night Challenge – 5th Edition",
     badge: "Attestation de Participation",
     image: aiNightCert,
+    credentialUrl: "https://www.linkedin.com/in/sirine-tekaya/details/certifications/",
     description:
       "Official certificate of participation in the AI Night Challenge 5th Edition national hackathon & AI competition.",
   },
@@ -34,6 +36,7 @@ const certifications = [
     issuer: "Cisco Networking Academy",
     badge: "Cisco Certification",
     image: networkingCert,
+    credentialUrl: "https://www.linkedin.com/in/sirine-tekaya/details/certifications/",
     description:
       "Comprehensive certification covering foundational computer networking concepts, IP addressing, protocols, router configuration, and network security fundamentals.",
   },
@@ -44,6 +47,7 @@ const certifications = [
     issuer: "Cisco Networking Academy",
     badge: "Cisco Certification",
     image: cybersecurityCert,
+    credentialUrl: "https://www.linkedin.com/in/sirine-tekaya/details/certifications/",
     description:
       "Certification in core cybersecurity principles, threat intelligence, data protection, privacy guidelines, and network defense strategies.",
   },
@@ -92,11 +96,12 @@ const doubleCerts = [...certifications, ...certifications, ...certifications];
 const doubleSkills = [...skillGroups, ...skillGroups, ...skillGroups];
 
 /* ─────────────────────────────────────────────
-   CERTIFICATE MODAL LIGHTBOX
+   PERFECTIONIST CERTIFICATE SHOWCASE MODAL
 ───────────────────────────────────────────── */
 function CertModal({ certIndex, onSelectIndex, onClose }) {
   const cert = certifications[certIndex];
   const total = certifications.length;
+  const [copiedCode, setCopiedCode] = useState(false);
 
   const handlePrev = useCallback(() => {
     onSelectIndex((certIndex - 1 + total) % total);
@@ -122,21 +127,70 @@ function CertModal({ certIndex, onSelectIndex, onClose }) {
 
   if (!cert) return null;
 
-  return (
-    <div className="cert-modal-overlay" onClick={onClose}>
-      <div className="cert-modal-box" onClick={(e) => e.stopPropagation()}>
-        {/* Close Button */}
-        <button className="cert-modal-close" onClick={onClose} aria-label="Close modal">
-          <i className="bx bx-x" />
-        </button>
+  const certUrl = cert.credentialUrl || "https://www.linkedin.com/in/sirine-tekaya/details/certifications/";
 
-        {/* Header */}
+  const handleCopyAndOpen = (e) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(certUrl).then(() => {
+      setCopiedCode(true);
+      setTimeout(() => setCopiedCode(false), 2000);
+    });
+    window.open(certUrl, "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <div className="showcase-modal-overlay" onClick={onClose}>
+      {/* Dynamic ambient background radial glow */}
+      <div className="showcase-modal-glow" style={{ background: "radial-gradient(circle, rgba(178, 124, 30, 0.28) 0%, transparent 70%)" }} />
+
+      <div className="cert-showcase-window" onClick={(e) => e.stopPropagation()}>
+        {/* macOS Inspector Window Top Bar */}
+        <div className="showcase-window-bar">
+          <div className="window-dots">
+            <button className="dot dot-close" onClick={onClose} title="Close window"><i className="bx bx-x" /></button>
+            <button className="dot dot-minimize" onClick={onClose} title="Minimize"><i className="bx bx-minus" /></button>
+            <button className="dot dot-expand" onClick={() => {
+              if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
+              else document.documentElement.requestFullscreen().catch(() => { });
+            }} title="Fullscreen"><i className="bx bx-expand-alt" /></button>
+          </div>
+
+          {/* Verification URL Address Bar - Copies & Opens LinkedIn */}
+          <div className="window-address-bar" onClick={handleCopyAndOpen} title="Click to copy link & open on LinkedIn">
+            <i className="bx bxl-linkedin lock-icon" />
+            <span className="address-url">{certUrl}</span>
+            <span className="copy-badge">{copiedCode ? "Copied & Opening!" : "LinkedIn"}</span>
+          </div>
+
+          <div className="window-actions">
+            <a
+              href={certUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="window-action-btn"
+              title="View on LinkedIn Profile"
+              onClick={(e) => {
+                navigator.clipboard.writeText(certUrl);
+                setCopiedCode(true);
+                setTimeout(() => setCopiedCode(false), 2000);
+              }}
+            >
+              <i className="bx bxl-linkedin" />
+              <span>{copiedCode ? "Copied!" : "LinkedIn"}</span>
+            </a>
+            <button className="window-close-btn" onClick={onClose} aria-label="Close">
+              <i className="bx bx-x" />
+            </button>
+          </div>
+        </div>
+
+        {/* Modal Sub Header */}
         <div className="cert-modal-header">
           <div className="cert-modal-icon-badge">
             <i className={cert.icon} />
           </div>
           <div>
-            <span className="cert-badge-tag">{cert.badge || "Certification Officielle"}</span>
+            <span className="cert-badge-tag">{cert.badge || "Official Certificate"}</span>
             <h3 className="cert-modal-title">{cert.title}</h3>
             <p className="cert-modal-issuer">
               <i className="bx bx-buildings" /> {cert.issuer}
@@ -146,8 +200,14 @@ function CertModal({ certIndex, onSelectIndex, onClose }) {
           </div>
         </div>
 
-        {/* Content Body */}
+        {/* Modal Main Body */}
         <div className="cert-modal-body">
+          {total > 1 && (
+            <button className="gallery-nav-btn gallery-nav-prev" onClick={handlePrev} aria-label="Previous certificate">
+              <i className="bx bx-chevron-left" />
+            </button>
+          )}
+
           {cert.image ? (
             <div className="cert-img-container">
               <img src={cert.image} alt={cert.title} className="cert-modal-img" />
@@ -158,30 +218,29 @@ function CertModal({ certIndex, onSelectIndex, onClose }) {
               <h4>{cert.title}</h4>
               <p className="cert-digital-issuer">{cert.issuer}</p>
               <div className="cert-seal">
-                <i className="bx bx-check-shield" /> Certifié &amp; Vérifié
+                <i className="bx bx-check-shield" /> Certified &amp; Verified
               </div>
             </div>
           )}
 
-          {cert.description && (
-            <p className="cert-modal-desc">{cert.description}</p>
+          {total > 1 && (
+            <button className="gallery-nav-btn gallery-nav-next" onClick={handleNext} aria-label="Next certificate">
+              <i className="bx bx-chevron-right" />
+            </button>
           )}
         </div>
 
-        {/* Footer Navigation */}
-        {total > 1 && (
-          <div className="cert-modal-footer">
-            <button className="cert-nav-btn" onClick={handlePrev} aria-label="Previous certificate">
-              <i className="bx bx-chevron-left" /> Précédent
-            </button>
-            <span className="cert-nav-count">
+        {/* Footer info & pagination */}
+        <div className="cert-modal-footer">
+          {cert.description && (
+            <p className="cert-modal-desc">{cert.description}</p>
+          )}
+          {total > 1 && (
+            <div className="cert-nav-count-pill">
               {certIndex + 1} / {total}
-            </span>
-            <button className="cert-nav-btn" onClick={handleNext} aria-label="Next certificate">
-              Suivant <i className="bx bx-chevron-right" />
-            </button>
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
