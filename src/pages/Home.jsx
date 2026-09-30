@@ -1,4 +1,7 @@
+import { useState } from "react";
 import Navbar from "../components/Navbar";
+import GlobalCanvas from "../components/GlobalCanvas";
+import Preloader from "../components/Preloader";
 import Hero from "../components/Hero";
 import About from "../components/About";
 import Education from "../components/Education";
@@ -10,8 +13,15 @@ import Contact from "../components/Contact";
 import Footer from "../components/Footer";
 
 function Home() {
+  const [loading, setLoading] = useState(true);
+
   return (
     <>
+      {loading && <Preloader onComplete={() => setLoading(false)} />}
+
+      {/* Single fixed circuit-board canvas for the entire site */}
+      <GlobalCanvas />
+
       <Navbar />
 
       <main>

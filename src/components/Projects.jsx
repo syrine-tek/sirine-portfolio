@@ -430,10 +430,13 @@ function ProjectCard({ project, onOpenShowcase }) {
         className="portfolio-thumb"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onClick={showDemoButton ? (e) => handleDemoClick(e, "demo") : undefined}
+        onClick={(e) => {
+          if (showDemoButton) handleDemoClick(e, project.video ? "video" : "gallery");
+          else if (project.liveUrl) handleDemoClick(e, "live");
+        }}
         style={{
           background: project.thumbnail ? "transparent" : project.bgGradient,
-          cursor: showDemoButton ? "pointer" : "default",
+          cursor: "pointer",
         }}
       >
         {/* Thumbnail background image */}
@@ -535,27 +538,284 @@ function ProjectCard({ project, onOpenShowcase }) {
    PROJECTS SECTION
 ───────────────────────────────────────────── */
 function Projects() {
-  const [showcaseModal, setShowcaseModal] = useState(null); // { project, initialTab }
+  const [showcaseModal, setShowcaseModal] = useState(null);
+  const [activeCategory, setActiveCategory] = useState("ALL");
+  const [selectedProjectId, setSelectedProjectId] = useState("milora-ecommerce");
+  const spotlightVideoRef = useRef(null);
+  const spotlightContainerRef = useRef(null);
+
+  const categories = ["ALL", "FULLSTACK", "MOBILE & AI", "HARDWARE & IOT", "WEB & SYSTEMS"];
+
+  const getCategory = (proj) => {
+    if (proj.id === "milora-ecommerce") return "FULLSTACK";
+    if (proj.id === "antisamsar") return "MOBILE & AI";
+    if (proj.id === "smartlift-access") return "HARDWARE & IOT";
+    return "WEB & SYSTEMS";
+  };
+
+  const filteredProjects = projects.filter(
+    (p) => activeCategory === "ALL" || getCategory(p) === activeCategory
+  );
+
+  const activeSpotlightProject = projects.find((p) => p.id === selectedProjectId) || projects[0];
 
   const handleOpenShowcase = (project, initialTab = "demo") => {
     setShowcaseModal({ project, initialTab });
   };
 
+  const handlePrevProject = () => {
+    const currentIndex = filteredProjects.findIndex((p) => p.id === activeSpotlightProject.id);
+    const prevIndex = (currentIndex - 1 + filteredProjects.length) % filteredProjects.length;
+    setSelectedProjectId(filteredProjects[prevIndex].id);
+  };
+
+  const handleNextProject = () => {
+    const currentIndex = filteredProjects.findIndex((p) => p.id === activeSpotlightProject.id);
+    const nextIndex = (currentIndex + 1) % filteredProjects.length;
+    setSelectedProjectId(filteredProjects[nextIndex].id);
+  };
+
+  const handleSelectProject = (projectId) => {
+    setSelectedProjectId(projectId);
+    if (spotlightContainerRef.current) {
+      spotlightContainerRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  };
+
+  useEffect(() => {
+    if (spotlightVideoRef.current) {
+      spotlightVideoRef.current.play().catch(() => { });
+    }
+  }, [selectedProjectId]);
+
+  // Non-passive wheel event listener on spotlight container to switch projects on scroll wheel
+  useEffect(() => {
+    const container = spotlightContainerRef.current;
+    if (!container) return;
+
+    let isCooldown = false;
+
+    const onWheel = (e) => {
+      e.preventDefault();
+
+      if (isCooldown) return;
+      isCooldown = true;
+      setTimeout(() => {
+        isCooldown = false;
+      }, 250);
+
+      const totalCount = filteredProjects.length;
+      if (totalCount <= 1) return;
+
+      const currIdx = filteredProjects.findIndex((p) => p.id === activeSpotlightProject.id);
+
+      if (e.deltaY > 0) {
+        // Scroll down -> Next project
+        const nextIdx = (currIdx + 1) % totalCount;
+        setSelectedProjectId(filteredProjects[nextIdx].id);
+      } else if (e.deltaY < 0) {
+        // Scroll up -> Previous project
+        const prevIdx = (currIdx - 1 + totalCount) % totalCount;
+        setSelectedProjectId(filteredProjects[prevIdx].id);
+      }
+    };
+
+    container.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      container.removeEventListener("wheel", onWheel);
+    };
+  }, [filteredProjects, activeSpotlightProject.id]);
+
   return (
     <section id="projects" className="projects-section">
-      <div className="section-container">
-        <h2 className="code-section-title">
-          <span className="code-tag">&lt;</span> Featured Projects <span className="code-tag">/&gt;</span>
-        </h2>
+      <div className="projects-ambient-bg" />
 
-        <div className="portfolio-grid">
-          {projects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onOpenShowcase={handleOpenShowcase}
-            />
-          ))}
+      <div className="section-container">
+        {/* Header & Category Filter */}
+        <div className="projects-header-wrapper">
+          <div className="exp-header" style={{ marginBottom: "0" }}>
+            <div className="exp-label">
+              <span className="exp-label-bracket">[</span>
+              <span className="exp-label-text">ENGINEERING.PORTFOLIO</span>
+              <span className="exp-label-bracket">]</span>
+            </div>
+            <h2 className="exp-title">
+              Featured  <span className="exp-title-accent">Projects</span>
+            </h2>
+          </div>
+        </div>
+
+        {/* Feature Spotlight Showcase */}
+        <div className="spotlight-showcase-container" ref={spotlightContainerRef}>
+          <div className="spotlight-badge-strip">
+            <span className="spotlight-flag"><i className="bx bx-star" /> FEATURED SPOTLIGHT</span>
+
+            {/* Navigation Dots (Matching Beyond Code style) */}
+            <div className="spotlight-nav-controls">
+              <div className="spotlight-dots-wrapper">
+                {filteredProjects.map((p) => (
+                  <button
+                    key={p.id}
+                    className={`spotlight-dot ${p.id === activeSpotlightProject.id ? "active" : ""}`}
+                    onClick={() => setSelectedProjectId(p.id)}
+                    title={p.title}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <span className="spotlight-num-indicator">
+              PROJECT 0{filteredProjects.findIndex((p) => p.id === activeSpotlightProject.id) + 1} / 0{filteredProjects.length}
+            </span>
+          </div>
+
+          <div className="spotlight-card-body">
+            {/* Visual Stage */}
+            <div
+              className="spotlight-visual-stage"
+              onClick={() => handleOpenShowcase(activeSpotlightProject, activeSpotlightProject.video ? "video" : "gallery")}
+              style={{
+                background: activeSpotlightProject.videoBg || activeSpotlightProject.bgGradient || "radial-gradient(circle at center, #141824 0%, #090c14 100%)",
+              }}
+            >
+
+              {activeSpotlightProject.video ? (
+                <video
+                  ref={spotlightVideoRef}
+                  src={activeSpotlightProject.video}
+                  className="spotlight-media-element"
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                />
+              ) : activeSpotlightProject.thumbnail ? (
+                <img
+                  src={activeSpotlightProject.thumbnail}
+                  alt={activeSpotlightProject.title}
+                  className="spotlight-media-element"
+                />
+              ) : (
+                <div className="spotlight-fallback-box">
+                  <i className={activeSpotlightProject.icon} />
+                </div>
+              )}
+
+              <div className="spotlight-overlay-vignette" />
+            </div>
+
+            {/* Details Panel */}
+            <div className="spotlight-details-panel">
+              <div className="spotlight-meta-header">
+                <span className="spotlight-cat-pill">{getCategory(activeSpotlightProject)}</span>
+                {activeSpotlightProject.isPrivate ? (
+                  <span className="spotlight-status-private">
+                    <i className="bx bx-lock-alt" /> Private Repository
+                  </span>
+                ) : (
+                  <span className="spotlight-status-public">
+                    <i className="bx bx-git-repo-forked" /> Open Source
+                  </span>
+                )}
+              </div>
+
+              <h3 className="spotlight-project-title">{activeSpotlightProject.title}</h3>
+              <p className="spotlight-project-desc">{activeSpotlightProject.description}</p>
+
+              <div className="spotlight-tech-stack">
+                {activeSpotlightProject.tags.map((t) => (
+                  <span key={t} className="spotlight-tech-tag">{t}</span>
+                ))}
+              </div>
+
+              <div className="spotlight-actions-row">
+                <button
+                  className="spotlight-btn-primary"
+                  onClick={() => handleOpenShowcase(activeSpotlightProject, activeSpotlightProject.video ? "video" : "gallery")}
+                >
+                  <i className="bx bx-layer" /> Explore Deep Details
+                </button>
+
+                {!activeSpotlightProject.isPrivate && activeSpotlightProject.githubUrl && (
+                  <a
+                    href={activeSpotlightProject.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="spotlight-btn-secondary"
+                  >
+                    <i className="bx bxl-github" /> Source Code <i className="bx bx-link-external" />
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Custom Project Deck Grid */}
+        <div className="projects-deck-grid">
+          {filteredProjects.map((project, idx) => {
+            const isSelected = project.id === selectedProjectId;
+            return (
+              <div
+                key={project.id}
+                className={`deck-project-card ${isSelected ? "selected-active" : ""}`}
+                onClick={() => handleSelectProject(project.id)}
+              >
+                <div className="deck-card-top-bar">
+                  <div className="deck-card-index">0{idx + 1}</div>
+                  <div className="deck-card-badge">
+                    {project.isPrivate ? (
+                      <span className="deck-badge-lock"><i className="bx bx-lock-alt" /> Private</span>
+                    ) : (
+                      <span className="deck-badge-repo"><i className="bx bx-code-alt" /> Public</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="deck-card-media-wrapper">
+                  {project.thumbnail ? (
+                    <img src={project.thumbnail} alt={project.title} className="deck-card-thumb" />
+                  ) : (
+                    <div className="deck-card-fallback-icon">
+                      <i className={project.icon} />
+                    </div>
+                  )}
+                  <div className="deck-card-hover-overlay">
+                    <span className="deck-hover-prompt">Click to Spotlight</span>
+                  </div>
+                </div>
+
+                <div className="deck-card-info-content">
+                  <h4 className="deck-card-title">{project.title}</h4>
+                  <p className="deck-card-excerpt">{project.description}</p>
+
+                  <div className="deck-card-tags">
+                    {project.tags.slice(0, 3).map((tag) => (
+                      <span key={tag} className="deck-tag-pill">{tag}</span>
+                    ))}
+                    {project.tags.length > 3 && (
+                      <span className="deck-tag-more">+{project.tags.length - 3}</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="deck-card-footer">
+                  <button
+                    className="deck-btn-inspect"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenShowcase(project, project.video ? "video" : "gallery");
+                    }}
+                  >
+                    <i className="bx bx-slideshow" /> View Demo
+                  </button>
+                  <span className="deck-select-indicator">
+                    {isSelected ? "ACTIVE FOCUS" : "SELECT"}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 

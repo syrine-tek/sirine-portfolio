@@ -3,7 +3,7 @@ import BAC from "../assets/BAC.jpeg";
 import JOUR from "../assets/JOUR.jpeg";
 import rapport from "../assets/rapport.jpeg";
 import comp from "../assets/comp.jpeg";
-import ai_night from "../assets/ai night.jpeg";
+import ai_night from "../assets/ai night.png";
 import nuit_d_info from "../assets/nuit d'info.jpeg";
 import friends from "../assets/friends.jpeg";
 import pepole from "../assets/pepole.jpeg";
@@ -170,31 +170,35 @@ function HumanSide() {
     <section id="human-side" className="human-side-section">
       <div className="section-container">
         {/* Section Header */}
-        <div className="human-side-header">
-          <h2 className="code-section-title" style={{ marginBottom: "16px" }}>
-            <span className="code-tag">&lt;</span> Beyond Code <span className="code-tag">/&gt;</span>
-          </h2>
-
-          <p className="human-side-desc">
-            Continuous learning, passion for hackathons, teamwork, and personal milestones that shape who I am behind the code.
-          </p>
-
-          {/* Filter Pills */}
-          <div className="human-filter-pills">
-            {categories.map((category) => (
-              <button
-                key={category}
-                className={`filter-pill ${activeTab === category ? "active" : ""}`}
-                onClick={() => handleTabChange(category)}
-              >
-                {category}
-              </button>
-            ))}
+        <div className="exp-header" style={{ marginBottom: "36px" }}>
+          <div className="exp-label">
+            <span className="exp-label-bracket">[</span>
+            <span className="exp-label-text">PERSONAL.SIDE</span>
+            <span className="exp-label-bracket">]</span>
           </div>
+          <h2 className="exp-title">
+            Beyond <span className="exp-title-accent">Code</span>
+          </h2>
+          <p className="exp-subtitle">
+            Continuous learning, hackathons, teamwork, and personal milestones that shape who I am behind the code.
+          </p>
+        </div>
+
+        {/* Filter Pills */}
+        <div className="human-filter-pills">
+          {categories.map((category) => (
+            <button
+              key={category}
+              className={`filter-pill ${activeTab === category ? "active" : ""}`}
+              onClick={() => handleTabChange(category)}
+            >
+              {category}
+            </button>
+          ))}
         </div>
 
         {/* STACKED CARDS SHOWCASE (Deck in same place with window header bar & scroll lock) */}
-        <div 
+        <div
           ref={deckRef}
           className="deck-container"
           onTouchStart={handleTouchStart}

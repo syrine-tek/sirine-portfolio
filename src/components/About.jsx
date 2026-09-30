@@ -3,21 +3,19 @@ import aboutImg from "../assets/phot.png";
 function About() {
   return (
     <section id="about" className="about-section">
-      {/* Background faint watermark tech icons */}
-      <div className="watermark-icons" aria-hidden="true">
-        <i className="devicon-spring-plain watermark w-3" style={{ top: "15%", left: "28%" }} />
-        <i className="devicon-vuejs-plain watermark w-1" style={{ top: "25%", left: "31%" }} />
-        <i className="devicon-figma-plain watermark w-4" style={{ top: "45%", left: "40%" }} />
-        <i className="devicon-django-plain watermark w-5" style={{ top: "58%", left: "55%" }} />
-        <i className="devicon-postgresql-plain watermark w-6" style={{ bottom: "15%", left: "25%" }} />
-      </div>
-
       <div className="section-container">
 
-        {/* Section Title with Code Tags */}
-        <h2 className="code-section-title">
-          <span className="code-tag">&lt;</span> About Me <span className="code-tag">/&gt;</span>
-        </h2>
+        {/* Section Header */}
+        <div className="exp-header">
+          <div className="exp-label">
+            <span className="exp-label-bracket">[</span>
+            <span className="exp-label-text">ABOUT.ENGINEER</span>
+            <span className="exp-label-bracket">]</span>
+          </div>
+          <h2 className="exp-title">
+            About <span className="exp-title-accent">Me</span>
+          </h2>
+        </div>
 
         <div className="about-content">
 
@@ -65,23 +63,7 @@ function About() {
               Now looking for a team where I can keep building end-to-end solutions.
             </p>
 
-            {/* Stats row */}
-            <div className="about-stats">
-              <div className="stat">
-                <span className="stat-num">3</span>
-                <span className="stat-label">professional internships</span>
-              </div>
-              <div className="stat">
-                <span className="stat-num">5+</span>
-                <span className="stat-label">projects completed</span>
-              </div>
-              <div className="stat">
-                <span className="stat-num">25+</span>
-                <span className="stat-label">technologies &amp; certifications</span>
-              </div>
-            </div>
           </div>
-
         </div>
       </div>
     </section>

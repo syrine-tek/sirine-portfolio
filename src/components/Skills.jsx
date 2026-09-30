@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import certifSoftskills from "../assets/certifSoftskills.jpg";
 import aiNightCert from "../assets/AI Night Challenge.png";
 import networkingCert from "../assets/Networking Basics.jpg";
@@ -8,6 +8,7 @@ const certifications = [
   {
     id: "softskills",
     icon: "bx bx-brain",
+    chipId: "CERT_01",
     title: "Emotional Intelligence (Soft Skills)",
     issuer: "KoneKt Us Business",
     badge: "Certified Training Diploma",
@@ -21,9 +22,12 @@ const certifications = [
   {
     id: "ainight",
     icon: "bx bx-award",
+    chipId: "CERT_02",
     title: "Certificate of Participation",
     issuer: "AI Night Challenge – 5th Edition",
-    badge: "Attestation de Participation",
+    badge: "National Hackathon Diploma",
+    hours: "Hackathon Competition",
+    code: "AI-NIGHT-2025",
     image: aiNightCert,
     credentialUrl: "https://www.linkedin.com/in/sirine-tekaya/details/certifications/",
     description:
@@ -32,9 +36,12 @@ const certifications = [
   {
     id: "networking",
     icon: "bx bx-network-chart",
+    chipId: "CERT_03",
     title: "Networking Basics",
     issuer: "Cisco Networking Academy",
     badge: "Cisco Certification",
+    hours: "Verified Credential",
+    code: "CISCO-NET-01",
     image: networkingCert,
     credentialUrl: "https://www.linkedin.com/in/sirine-tekaya/details/certifications/",
     description:
@@ -43,9 +50,12 @@ const certifications = [
   {
     id: "cybersecurity",
     icon: "bx bx-shield-quarter",
+    chipId: "CERT_04",
     title: "Introduction to Cybersecurity",
     issuer: "Cisco Networking Academy",
     badge: "Cisco Certification",
+    hours: "Verified Credential",
+    code: "CISCO-SEC-02",
     image: cybersecurityCert,
     credentialUrl: "https://www.linkedin.com/in/sirine-tekaya/details/certifications/",
     description:
@@ -53,50 +63,51 @@ const certifications = [
   },
 ];
 
-const skillGroups = [
+const neuralNodes = [
   {
-    icon: "bx bx-code-curly",
-    name: "Languages",
-    tags: ["C", "C++", "Python", "JavaScript", "Dart"],
-  },
-  {
-    icon: "bx bx-window-alt",
-    name: "Web",
-    tags: ["React", "Node.js", "NestJS", "Express"],
-  },
-  {
-    icon: "bx bx-mobile-alt",
-    name: "Mobile",
-    tags: ["Flutter", "Firebase"],
-  },
-  {
+    id: "embedded",
+    nodeCode: "NODE_01",
+    title: "Embedded Systems & IoT Core",
     icon: "bx bx-chip",
-    name: "Embedded / IoT",
-    tags: ["Arduino", "ESP32", "FreeRTOS", "MQTT", "Raspberry Pi"],
+    accentColor: "#b27c1e",
+    level: "92% OPTIMIZED",
+    skills: ["ESP32", "Arduino", "Raspberry Pi"],
+    summary: "Microcontroller logic, sensor telemetry, RTOS concurrency & hardware-software interfacing.",
   },
   {
-    icon: "bx bx-data",
-    name: "Databases",
-    tags: ["MongoDB", "PostgreSQL", "MySQL"],
+    id: "web",
+    nodeCode: "NODE_02",
+    title: "Full-Stack Web Engine",
+    icon: "bx bx-code-alt",
+    accentColor: "#ffe082",
+    level: "95% OPTIMIZED",
+    skills: ["React", "Node.js", "NestJS", "Express", "JavaScript", "Python"],
+    summary: "High-performance web applications, REST APIs, asynchronous servers & modern UI architecture.",
   },
   {
-    icon: "bx bx-cloud",
-    name: "Cloud & DevOps",
-    tags: ["AWS", "Docker", "GitHub Actions", "Git"],
+    id: "mobile",
+    nodeCode: "NODE_03",
+    title: "Mobile App Architecture",
+    icon: "bx bx-mobile-alt",
+    accentColor: "#d49e38",
+    level: "88% OPTIMIZED",
+    skills: ["Flutter", "Dart"],
+    summary: "Native-grade cross-platform iOS/Android apps with real-time cloud data sync.",
   },
   {
-    icon: "bx bx-bulb",
-    name: "AI & ML",
-    tags: ["scikit-learn", "TensorFlow", "OpenCV", "YOLOv8"],
+    id: "ai-cloud",
+    nodeCode: "NODE_04",
+    title: "Databases",
+    icon: "bx bx-brain",
+    accentColor: "#ffe082",
+    level: "90% OPTIMIZED",
+    skills: ["MongoDB", "SQL", "Git"],
+    summary: "SQL/NoSQL databases deployment.",
   },
 ];
 
-// Duplicated for seamless infinite loop
-const doubleCerts = [...certifications, ...certifications, ...certifications];
-const doubleSkills = [...skillGroups, ...skillGroups, ...skillGroups];
-
 /* ─────────────────────────────────────────────
-   PERFECTIONIST CERTIFICATE SHOWCASE MODAL
+   CERTIFICATE LIGHTBOX MODAL
 ───────────────────────────────────────────── */
 function CertModal({ certIndex, onSelectIndex, onClose }) {
   const cert = certifications[certIndex];
@@ -140,11 +151,9 @@ function CertModal({ certIndex, onSelectIndex, onClose }) {
 
   return (
     <div className="showcase-modal-overlay" onClick={onClose}>
-      {/* Dynamic ambient background radial glow */}
       <div className="showcase-modal-glow" style={{ background: "radial-gradient(circle, rgba(178, 124, 30, 0.28) 0%, transparent 70%)" }} />
 
       <div className="cert-showcase-window" onClick={(e) => e.stopPropagation()}>
-        {/* macOS Inspector Window Top Bar */}
         <div className="showcase-window-bar">
           <div className="window-dots">
             <button className="dot dot-close" onClick={onClose} title="Close window"><i className="bx bx-x" /></button>
@@ -155,7 +164,6 @@ function CertModal({ certIndex, onSelectIndex, onClose }) {
             }} title="Fullscreen"><i className="bx bx-expand-alt" /></button>
           </div>
 
-          {/* Verification URL Address Bar - Copies & Opens LinkedIn */}
           <div className="window-address-bar" onClick={handleCopyAndOpen} title="Click to copy link & open on LinkedIn">
             <i className="bx bxl-linkedin lock-icon" />
             <span className="address-url">{certUrl}</span>
@@ -169,7 +177,7 @@ function CertModal({ certIndex, onSelectIndex, onClose }) {
               rel="noopener noreferrer"
               className="window-action-btn"
               title="View on LinkedIn Profile"
-              onClick={(e) => {
+              onClick={() => {
                 navigator.clipboard.writeText(certUrl);
                 setCopiedCode(true);
                 setTimeout(() => setCopiedCode(false), 2000);
@@ -184,7 +192,6 @@ function CertModal({ certIndex, onSelectIndex, onClose }) {
           </div>
         </div>
 
-        {/* Modal Sub Header */}
         <div className="cert-modal-header">
           <div className="cert-modal-icon-badge">
             <i className={cert.icon} />
@@ -200,7 +207,6 @@ function CertModal({ certIndex, onSelectIndex, onClose }) {
           </div>
         </div>
 
-        {/* Modal Main Body */}
         <div className="cert-modal-body">
           {total > 1 && (
             <button className="gallery-nav-btn gallery-nav-prev" onClick={handlePrev} aria-label="Previous certificate">
@@ -230,7 +236,6 @@ function CertModal({ certIndex, onSelectIndex, onClose }) {
           )}
         </div>
 
-        {/* Footer info & pagination */}
         <div className="cert-modal-footer">
           {cert.description && (
             <p className="cert-modal-desc">{cert.description}</p>
@@ -247,179 +252,164 @@ function CertModal({ certIndex, onSelectIndex, onClose }) {
 }
 
 function Skills() {
-  const certTrackRef = useRef(null);
-  const skillsTrackRef = useRef(null);
-  const [isCertHovered, setIsCertHovered] = useState(false);
-  const [isSkillsHovered, setIsSkillsHovered] = useState(false);
-  const [isCertPaused, setIsCertPaused] = useState(false);
-  const [isSkillsPaused, setIsSkillsPaused] = useState(false);
+  const [activeNodeId, setActiveNodeId] = useState("embedded");
   const [activeCertIndex, setActiveCertIndex] = useState(null);
 
-  const certTimeoutRef = useRef(null);
-  const skillsTimeoutRef = useRef(null);
-
-  const handleArrowClick = (trackType, direction) => {
-    const ref = trackType === "cert" ? certTrackRef : skillsTrackRef;
-    if (!ref.current) return;
-
-    if (trackType === "cert") {
-      setIsCertPaused(true);
-      if (certTimeoutRef.current) clearTimeout(certTimeoutRef.current);
-      certTimeoutRef.current = setTimeout(() => setIsCertPaused(false), 1800);
-    } else {
-      setIsSkillsPaused(true);
-      if (skillsTimeoutRef.current) clearTimeout(skillsTimeoutRef.current);
-      skillsTimeoutRef.current = setTimeout(() => setIsSkillsPaused(false), 1800);
-    }
-
-    const track = ref.current;
-    if (direction < 0 && track.scrollLeft <= 20) {
-      track.scrollLeft = track.scrollWidth / 3;
-    }
-    track.scrollBy({ left: direction * 280, behavior: "smooth" });
-  };
-
-  // Continuous smooth marquee animation over time
+  // Automatic left-to-right cycling over time
   useEffect(() => {
-    let animId;
-    const speed = 0.8; // px per frame
+    const timer = setInterval(() => {
+      setActiveNodeId((prevId) => {
+        const currIndex = neuralNodes.findIndex((n) => n.id === prevId);
+        const nextIndex = (currIndex + 1) % neuralNodes.length;
+        return neuralNodes[nextIndex].id;
+      });
+    }, 1000);
 
-    const animate = () => {
-      // Certifications track animation
-      if (certTrackRef.current && !isCertHovered && !isCertPaused && activeCertIndex === null) {
-        const track = certTrackRef.current;
-        track.scrollLeft += speed;
-        // Circular loop reset
-        if (track.scrollLeft >= track.scrollWidth / 3) {
-          track.scrollLeft = 0;
-        }
-      }
+    return () => clearInterval(timer);
+  }, []);
 
-      // Skills track animation
-      if (skillsTrackRef.current && !isSkillsHovered && !isSkillsPaused) {
-        const track = skillsTrackRef.current;
-        track.scrollLeft += speed * 0.9;
-        // Circular loop reset
-        if (track.scrollLeft >= track.scrollWidth / 3) {
-          track.scrollLeft = 0;
-        }
-      }
-
-      animId = requestAnimationFrame(animate);
-    };
-
-    animId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animId);
-  }, [isCertHovered, isSkillsHovered, isCertPaused, isSkillsPaused, activeCertIndex]);
-
-  const handleCertClick = (originalIndex) => {
-    setActiveCertIndex(originalIndex % certifications.length);
-  };
+  const activeNode = neuralNodes.find((n) => n.id === activeNodeId) || neuralNodes[0];
 
   return (
     <section id="skills" className="skills-section">
-      <div className="section-container">
+      {/* Background Soft Glow */}
+      <div className="skills-soft-glow" aria-hidden="true" />
 
-        <h2 className="section-title">Skills & Certifications</h2>
+      <div className="section-container skills-inner">
 
-        {/* ===== CERTIFICATIONS ===== */}
-        <div className="cert-block">
-          <div className="cert-block-head">
-            <h3 className="cert-heading">
-              <i className="bx bx-medal" /> Certifications
-            </h3>
-            <div className="marquee-nav">
-              <button
-                className="marquee-arrow"
-                aria-label="Previous"
-                onClick={() => handleArrowClick("cert", -1)}
-              >
-                <i className="bx bx-chevron-left" />
-              </button>
-              <button
-                className="marquee-arrow"
-                aria-label="Next"
-                onClick={() => handleArrowClick("cert", 1)}
-              >
-                <i className="bx bx-chevron-right" />
-              </button>
-            </div>
+        {/* Section Header */}
+        <div className="exp-header" style={{ marginBottom: "50px" }}>
+          <div className="exp-label">
+            <span className="exp-label-bracket">[</span>
+            <span className="exp-label-text">CYBERNETIC.ARSENAL</span>
+            <span className="exp-label-bracket">]</span>
           </div>
-
-          <div
-            className="marquee-viewport"
-            onMouseEnter={() => setIsCertHovered(true)}
-            onMouseLeave={() => setIsCertHovered(false)}
-          >
-            <div className="marquee-track" ref={certTrackRef}>
-              {doubleCerts.map((cert, i) => {
-                const originalIndex = i % certifications.length;
-                return (
-                  <div
-                    className="cert-card cert-card-clickable"
-                    key={i}
-                    onClick={() => handleCertClick(originalIndex)}
-                  >
-                    <i className={cert.icon} />
-                    <div>
-                      <h4>{cert.title}</h4>
-                      <span>{cert.issuer}</span>
-                    </div>
-                    <div className="cert-card-hover-icon">
-                      <i className="bx bx-expand-alt" />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <h2 className="exp-title">
+            Skills &  <span className="exp-title-accent">Certifications</span>
+          </h2>
+          <p className="exp-subtitle">
+            Interactive neural nodes connecting embedded systems, web architectures &amp; verified credentials.
+          </p>
         </div>
 
-        {/* ===== STACK & TOOLS ===== */}
-        <div className="cert-block">
-          <div className="cert-block-head">
-            <h3 className="cert-heading">
-              <i className="bx bx-code-block" /> Stack & Tools
-            </h3>
-            <div className="marquee-nav">
-              <button
-                className="marquee-arrow"
-                aria-label="Previous"
-                onClick={() => handleArrowClick("skills", -1)}
-              >
-                <i className="bx bx-chevron-left" />
-              </button>
-              <button
-                className="marquee-arrow"
-                aria-label="Next"
-                onClick={() => handleArrowClick("skills", 1)}
-              >
-                <i className="bx bx-chevron-right" />
-              </button>
+        {/* ===== QUANTUM NEURAL MATRIX CONTAINER ===== */}
+        <div className="neural-matrix-deck">
+
+          {/* TOP NEURAL CORE DOCK */}
+          <div className="neural-core-header">
+            <div className="core-status">
+              <span className="core-pulse-dot" />
+              <span>Skills</span>
+            </div>
+            <div className="core-mode-badge">
+              <i className="bx bx-pulse" /> 4 ACTIVE NODES OPERATIONAL
             </div>
           </div>
 
-          <div
-            className="marquee-viewport"
-            onMouseEnter={() => setIsSkillsHovered(true)}
-            onMouseLeave={() => setIsSkillsHovered(false)}
-          >
-            <div className="marquee-track" ref={skillsTrackRef}>
-              {doubleSkills.map((group, i) => (
-                <div className="skill-card" key={`${group.name}-${i}`}>
-                  <div className="skill-head">
-                    <i className={group.icon} />
-                    <span className="skill-name">{group.name}</span>
+          {/* NEURAL NODES SELECTOR TABS */}
+          <div className="neural-nodes-grid">
+            {neuralNodes.map((node) => {
+              const isActive = node.id === activeNodeId;
+              return (
+                <div
+                  key={node.id}
+                  className={`neural-node-card ${isActive ? "active-node" : ""}`}
+                  onClick={() => setActiveNodeId(node.id)}
+                >
+                  <div className="node-card-top">
+                    <span className="node-code">{node.nodeCode}</span>
+                    <span className="node-level">{node.level}</span>
                   </div>
-                  <div className="skill-tags">
-                    {group.tags.map((tag) => (
-                      <span key={tag}>{tag}</span>
-                    ))}
+
+                  <div className="node-card-main">
+                    <div className="node-icon-box">
+                      <i className={node.icon} />
+                    </div>
+                    <div>
+                      <h3 className="node-title">{node.title}</h3>
+                      <span className="node-skill-count">{node.skills.length} Tech Modules</span>
+                    </div>
+                  </div>
+
+                  {isActive && <div className="node-active-line" />}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* ACTIVE NEURAL NODE DETAILED FOCUS PANEL */}
+          <div className="neural-focus-panel">
+            <div className="focus-header">
+              <div className="focus-title-group">
+                <i className={activeNode.icon} />
+                <div>
+                  <span className="focus-node-tag">{activeNode.nodeCode} // DETAILED KNOWLEDGE TREE</span>
+                  <h3 className="focus-node-title">{activeNode.title}</h3>
+                </div>
+              </div>
+            </div>
+
+            <p className="focus-summary">{activeNode.summary}</p>
+
+            {/* INTERACTIVE TECH CHIPS GRID */}
+            <div className="focus-tech-grid">
+              {activeNode.skills.map((skill) => (
+                <div key={skill} className="focus-tech-chip">
+                  <span className="chip-dot" />
+                  <span className="chip-name">{skill}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* VERIFIED CERTIFICATIONS VAULT */}
+          <div className="neural-cert-vault">
+            <div className="vault-top-bar">
+              <div className="vault-title-wrap">
+                <i className="bx bx-shield-quarter" />
+                <div>
+                  <h3 className="vault-heading">Certifications</h3>
+                  <p className="vault-subheading">Official diploma credentials</p>
+                </div>
+              </div>
+              <span className="vault-count-badge">4 DIPLOMAS VERIFIED</span>
+            </div>
+
+            <div className="neural-cert-grid">
+              {certifications.map((cert, index) => (
+                <div
+                  key={cert.id}
+                  className="neural-cert-card"
+                  onClick={() => setActiveCertIndex(index)}
+                >
+                  <div className="cert-card-header">
+                    <span className="cert-chip-id">{cert.chipId}</span>
+                  </div>
+
+                  <div className="cert-card-content">
+                    <div className="cert-icon-frame">
+                      <i className={cert.icon} />
+                    </div>
+                    <div>
+                      <span className="cert-badge-type">{cert.badge}</span>
+                      <h4 className="cert-card-title">{cert.title}</h4>
+                      <p className="cert-card-issuer">
+                        <i className="bx bx-buildings" /> {cert.issuer}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="cert-card-footer">
+                    <span className="cert-hours-text">{cert.hours}</span>
+                    <button className="cert-inspect-link">
+                      View <i className="bx bx-right-arrow-alt" />
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+
         </div>
 
       </div>
@@ -437,3 +427,4 @@ function Skills() {
 }
 
 export default Skills;
+
