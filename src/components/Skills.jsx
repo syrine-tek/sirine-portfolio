@@ -382,29 +382,46 @@ function Skills() {
                   className="neural-cert-card"
                   onClick={() => setActiveCertIndex(index)}
                 >
-                  <div className="cert-card-header">
-                    <span className="cert-chip-id">{cert.chipId}</span>
+                  {/* Medal badge */}
+                  <div className="ncert-medal" aria-hidden="true">
+                    <i className="bx bxs-medal" />
                   </div>
 
-                  <div className="cert-card-content">
-                    <div className="cert-icon-frame">
-                      <i className={cert.icon} />
-                    </div>
-                    <div>
-                      <span className="cert-badge-type">{cert.badge}</span>
-                      <h4 className="cert-card-title">{cert.title}</h4>
-                      <p className="cert-card-issuer">
-                        <i className="bx bx-buildings" /> {cert.issuer}
-                      </p>
+                  {/* Certificate image preview */}
+                  <div className="ncert-img-frame">
+                    <div className="ncert-scanline" aria-hidden="true" />
+                    {cert.image ? (
+                      <img src={cert.image} alt={cert.title} className="ncert-img" loading="lazy" />
+                    ) : (
+                      <div className="ncert-img-placeholder">
+                        <i className={cert.icon} />
+                      </div>
+                    )}
+                    {/* HUD corners */}
+                    <span className="ncert-hud ncert-hud-tl" aria-hidden="true" />
+                    <span className="ncert-hud ncert-hud-tr" aria-hidden="true" />
+                    <span className="ncert-hud ncert-hud-bl" aria-hidden="true" />
+                    <span className="ncert-hud ncert-hud-br" aria-hidden="true" />
+                  </div>
+
+                  {/* Info */}
+                  <div className="ncert-body">
+                    <h4 className="ncert-title">{cert.title}</h4>
+                    <div className="ncert-meta">
+                      <span className="ncert-issuer">
+                        <i className="bx bx-buildings" />
+                        {cert.issuer}
+                      </span>
+                      <span className="ncert-hours">
+                        <i className="bx bx-time-five" />
+                        {cert.hours}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="cert-card-footer">
-                    <span className="cert-hours-text">{cert.hours}</span>
-                    <button className="cert-inspect-link">
-                      View <i className="bx bx-right-arrow-alt" />
-                    </button>
-                  </div>
+                  {/* Corner accents */}
+                  <span className="ncert-corner ncert-corner-tl" aria-hidden="true" />
+                  <span className="ncert-corner ncert-corner-br" aria-hidden="true" />
                 </div>
               ))}
             </div>
